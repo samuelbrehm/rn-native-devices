@@ -1,26 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
   ScrollView,
-  Button
+  View,
+  Button,
+  Text,
+  TextInput,
+  StyleSheet
 } from "react-native";
 import { useDispatch } from "react-redux";
 
-import * as placesActions from "../store/places-actions";
-
 import Colors from "../constants/Colors";
-import ImgPicker from "../components/ImagePicker";
+import * as placesActions from "../store/places-actions";
+import ImagePicker from "../components/ImagePicker";
+import LocationPicker from "../components/LocationPicker";
 
 const NewPlaceScreen = props => {
   const [titleValue, setTitleValue] = useState("");
   const [selectedImage, setSelectedImage] = useState();
+  const [selectedLocation, setSelectedLocation] = useState();
 
   const dispatch = useDispatch();
 
   const titleChangeHandler = text => {
+    // you could add validation
     setTitleValue(text);
   };
 
@@ -28,8 +30,14 @@ const NewPlaceScreen = props => {
     setSelectedImage(imagePath);
   };
 
+  const locationPickedhandler = useCallback(location => {
+    setSelectedLocation(location);
+  }, []);
+
   const savePlaceHandler = () => {
-    dispatch(placesActions.addPlace(titleValue, selectedImage));
+    dispatch(
+      placesActions.addPlace(titleValue, selectedImage, selectedLocation)
+    );
     props.navigation.goBack();
   };
 
@@ -42,7 +50,11 @@ const NewPlaceScreen = props => {
           onChangeText={titleChangeHandler}
           value={titleValue}
         />
-        <ImgPicker onImageTaken={imageTakenHandler} />
+        <ImagePicker onImageTaken={imageTakenHandler} />
+        <LocationPicker
+          navigation={props.navigation}
+          onLocationPicked={locationPickedhandler}
+        />
         <Button
           title="Save Place"
           color={Colors.primary}
