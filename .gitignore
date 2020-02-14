@@ -12,6 +12,7 @@ web-report/
 
 .env
 .env.js
+env.js
 
 # macOS
 .DS_Store
